@@ -75,7 +75,7 @@ async function findUserHBD() {
 function pesan1(nama, nomorWhatsApp, JnsKel) {
     let jenis = JnsKel == 'Laki-laki' ? 'Bapak' : 'Ibu';
     let pesan = "Salam hormat " + jenis + " " + nama + ",\n\n" +
-        "Mohon untuk segera mengisi Laporan Kinerja Karyawan RSUD dr. Abdul Aziz Singkawang melalui link berikut: \n" +
+        "Mohon untuk segera mengisi Laporan Kinerja Karyawan RSU Saadah Singkawang melalui link berikut: \n" +
         "https://cctv.rsudaa.singkawangkota.go.id/. \n" +
         "Catatan: Untuk login ke akun tersebut, gunakan nomor WhatsApp pribadi Anda yaitu " + nomorWhatsApp + ".\n\n" +
         "Terima kasih atas perhatian dan kerjasamanya.\n";
@@ -89,7 +89,7 @@ Semoga penuh berkah, diberikan kesehatan yang baik, dimurahkan rezeki dan dianug
 Semoga hari ini semanis dirimu
 
 Ttd,
-Direktur RSUD dr. ABDUL AZIZ KOTA SINGKAWANG
+Direktur RSU Saadah KOTA SINGKAWANG
 
 dr. Achmad Hardin, Sp. PD`
     return pesan;

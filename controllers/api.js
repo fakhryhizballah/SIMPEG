@@ -19,7 +19,7 @@ module.exports = {
       if (!user) {
         let data = JSON.stringify({
           message:
-            "Maaf, nomor Anda tidak terdaftar di sistem kami. Silahkan hubungi IT RSUD dr. Abdul Aziz untuk mendaftar.",
+            "Maaf, nomor Anda tidak terdaftar di sistem kami. Silahkan hubungi IT RSU Saadah untuk mendaftar.",
           telp: body.phone,
         });
         let config = {

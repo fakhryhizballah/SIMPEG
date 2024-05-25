@@ -46,7 +46,7 @@ Semoga penuh berkah, diberikan kesehatan yang baik, dimurahkan rezeki dan dianug
 Semoga hari ini semanis dirimu
 
 Ttd,
-Direktur RSUD dr. ABDUL AZIZ KOTA SINGKAWANG
+Direktur RSU Saadah KOTA SINGKAWANG
 
 dr. Alexande, Sp. PD`,
             telp: `${wa}`,

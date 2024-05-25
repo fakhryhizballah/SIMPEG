@@ -35,7 +35,7 @@ async function saveContak(user) {
     phoneNumber: user.wa,
     email: user.email,
     organizations: {
-      name: "RSUD dr. Abdul Aziz",
+      name: "RSU Saadah",
       title: user.jab,
     },
     birthdays: {

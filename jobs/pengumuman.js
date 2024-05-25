@@ -92,12 +92,12 @@ async function kirimEmailLaporan(nama, email, month, JnsKel) {
             "date_now": tanggal,
             "name": `${jnskel} ${nama}`,
             "subject": `Pemberitahuan untuk mengirim laporan kinerja bulan ${month}`,
-            "p1": `Saya harap ${jnskel} ${nama} dalam keadaan sehat. Kami ingin mengingatkan ${jnskel} ${nama} untuk segera mengirimkan laporan kinerja bulan ${month}. Laporan ini sangat penting untuk memantau kemajuan pekerjaan di RSUD dr. Abdul Aziz dan untuk mencapai tujuan pelayanan yang lebih baik.`,
+            "p1": `Saya harap ${jnskel} ${nama} dalam keadaan sehat. Kami ingin mengingatkan ${jnskel} ${nama} untuk segera mengirimkan laporan kinerja bulan ${month}. Laporan ini sangat penting untuk memantau kemajuan pekerjaan di RSU Saadah dan untuk mencapai tujuan pelayanan yang lebih baik.`,
             "p2": `Diharapkan laporan kinerja bulan ${month} dapat segera dikrirm.
             Jika ${jnskel} ${nama} memerlukan bantuan tambahan atau ada kendala dalam menyusun laporan, jangan ragu untuk menghubungi bagian SDM.`,
             "p3": `Terima kasih atas kerja keras ${jnskel} ${nama}. Kami berharap laporan kinerja bulan ${month} dapat segera kami terima.`,
             "from": "",
-            "jabatan": "RSUD dr. Abdul Aziz",
+            "jabatan": "RSU Saadah",
         }
     };
     let config = {
