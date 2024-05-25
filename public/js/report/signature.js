@@ -14,7 +14,7 @@ function QRAtasan(message) {
     height: 120,
     type: "svg",
     data: message,
-    image: "/asset/img/Lambang_KotaSingkawang.webp",
+    image: "/asset/img/Lambang.webp",
     dotsOptions: {
       color: "#000000",
       type: "rounded",
