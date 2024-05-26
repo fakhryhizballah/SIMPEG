@@ -10,4 +10,7 @@ hakases.json
 uitest.js
 .env dev
 .DS_Store
+<<<<<<< HEAD
 .DS_Store
+=======
+>>>>>>> 4fd5cc850c6c5bf1f9b5370df92646e6b6e6d3de
