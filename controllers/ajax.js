@@ -17,8 +17,10 @@ const {
   Ledger_cuti,
   sequelize,
   Cuti_approval,
+  Cuti_lampiran,
   Access,
-  Hotspot
+  Hotspot,
+  Instalasi
 } = require("../models");
 const { Op, or } = require("sequelize");
 const fs = require("fs");
@@ -82,6 +84,12 @@ module.exports = {
       let token = req.cookies.token;
       let decoded = jwt.verify(token, secretKey);
 
+      if (body.tmt_pangkat == "") {
+        body.tmt_pangkat = null;
+      }
+      if (body.tmt_kerja == "") {
+        body.tmt_kerja = null;
+      }
       let updateBio = await Biodatas.update(body, {
         where: {
           nik: decoded.id,
@@ -1098,8 +1106,6 @@ module.exports = {
         },
         { transaction: t }
       );
-
-
       let Boss = await Atasan.findOne({
         where: {
           user: decoded.id,
@@ -1127,30 +1133,45 @@ module.exports = {
         },
         { transaction: t }
       );
+      let urlLampiran = body.lampiran || "-";
+      if (getJenisCuti.type_cuti == "Cuti Sakit" || getJenisCuti.type_cuti == "Cuti Melahirkan") {
+        urlLampiran = body.lampiran
+        await Cuti_lampiran.create(
+          {
+            id_cuti: saveCuti.id,
+            nik: decoded.id,
+            file: body.lampiran,
+            periode: `${new Date().getFullYear()}`,
+          },
+          { transaction: t }
+        )
+      }
+
 
       let jnsKelBoss = (Boss.atasanLangsung.JnsKel == 'Laki-laki') ? 'Bapak ' : 'Ibu ';
-
       let pesan = `Pemberitahuan Pengajuan Cuti Pegawai
-Halo ${jnsKelBoss} ${Boss.atasanLangsung.nama},
+Yth. ${jnsKelBoss} ${Boss.atasanLangsung.nama},
       
 Saat ini pegawai dengan : 
-Nama : ${decoded.nama}
-NIK : ${decoded.id} 
+Nama       : ${decoded.nama}
+NIK        : ${decoded.id} 
 Jenis Cuti : ${getJenisCuti.type_cuti}
-Tanggal : ${body.mulai} s/d ${body.samapi} (${body.jumlah} hari). 
-      
+Tanggal    : ${body.mulai} s/d ${body.samapi} (${body.jumlah} hari). 
+Lampiran   : ${urlLampiran}      
 Untuk memberikan persetujuan atau penolakan terhadap pengajuan cuti diatas, silakan akses aplikasi SIMPEG. 
 Terima kasih atas perhatiannya.`;
       let data = JSON.stringify({
         message: pesan,
         telp: Boss.atasanLangsung.wa
       });
+
       let pesanGrub = `*Pemberitahuan Cuti Pegawai*
-Nama : ${decoded.nama}
-NIK : ${decoded.id}
-Bidang : ${dep.bidang} 
+Nama       : ${decoded.nama}
+NIK        : ${decoded.id}
+Bidang     : ${dep.bidang} 
 Jenis Cuti : ${getJenisCuti.type_cuti}
-Tanggal : ${body.mulai} s/d ${body.samapi} (${body.jumlah} hari)`
+Tanggal    : ${body.mulai} s/d ${body.samapi} (${body.jumlah} hari)
+Lampiran   : ${urlLampiran}`
       let dataGrub = JSON.stringify({
         message: pesanGrub,
         telp: process.env.GROUP_HR
@@ -1177,7 +1198,7 @@ Tanggal : ${body.mulai} s/d ${body.samapi} (${body.jumlah} hari)`
     }
   },
   postCutiLate: async (req, res) => {
-    let { nama, nik, departemen, noWA, type_cuti, mulai, samapi, jumlah, keterangan, maxCuti, alamat } = req.body;
+    let { nama, nik, departemen, noWA, type_cuti, mulai, samapi, jumlah, keterangan, maxCuti, alamat, lampiran } = req.body;
     let t = await sequelize.transaction();
     try {
       let year = mulai.split("-");
@@ -1257,28 +1278,42 @@ Tanggal : ${body.mulai} s/d ${body.samapi} (${body.jumlah} hari)`
           jabatan: Boss.atasanLangsung.jab,
           status: "Menunggu",
         }, { transaction: t });
+      let urlLampiran = lampiran || "-";
+      if (getJenisCuti.type_cuti == "Cuti Sakit" || getJenisCuti.type_cuti == "Cuti Melahirkan") {
+        urlLampiran = lampiran
+        await Cuti_lampiran.create(
+          {
+            id_cuti: saveCuti.id,
+            nik: nik,
+            file: lampiran,
+            periode: `${new Date().getFullYear()}`,
+          },
+          { transaction: t }
+        )
+      }
       let jnsKelBoss = (Boss.atasanLangsung.JnsKel == 'Laki-laki') ? 'Bapak ' : 'Ibu ';
-      let pesan = `Pemberitahuan Pengajuan Cuti Pegawai
-Halo ${jnsKelBoss} ${Boss.atasanLangsung.nama},
+      let pesan = `Pemberitahuan Pengajuan Cuti Pegawai *(BACKDATE)*
+Kepada yang terhormat ${jnsKelBoss} ${Boss.atasanLangsung.nama},
             
 Saat ini pegawai dengan : 
 Nama : ${nama}
 NIK : ${nik} 
 Jenis Cuti : ${getJenisCuti.type_cuti}
 Tanggal : ${mulai} s/d ${samapi} (${jumlah} hari). 
-
+Lampiran   : ${urlLampiran}   
 Untuk memberikan persetujuan atau penolakan terhadap pengajuan cuti diatas, silakan akses aplikasi SIMPEG. 
 Terima kasih atas perhatiannya.`;
       let data = JSON.stringify({
         message: pesan,
         telp: Boss.atasanLangsung.wa
       });
-      let pesanGrub = `*Pemberitahuan Cuti Pegawai*
+      let pesanGrub = `*Pemberitahuan Cuti Pegawai (BACKDATE)*
 Nama : ${nama}
 NIK : ${nik}
 Bidang : ${departemen} 
 Jenis Cuti : ${getJenisCuti.type_cuti}
-Tanggal : ${mulai} s/d ${samapi} (${jumlah} hari)`
+Tanggal : ${mulai} s/d ${samapi} (${jumlah} hari)
+Lampiran   : ${urlLampiran}`
 
       let dataGrub = JSON.stringify({
         message: pesanGrub,
@@ -1389,7 +1424,7 @@ Tanggal : ${mulai} s/d ${samapi} (${jumlah} hari)`
             include: [
               {
                 model: User,
-                as: "user",
+                as: "atasan",
                 attributes: ["nama", "nip", "jab"],
               },
             ],
@@ -1418,11 +1453,15 @@ Tanggal : ${mulai} s/d ${samapi} (${jumlah} hari)`
   },
   getSisaCuti: async (req, res) => {
     let user = req.account;
+
+    let { type_cuti } = req.query;
     try {
-      let data = await Cuti.findAll({
+      let data = await Ledger_cuti.findOne({
         where: {
-          nik: user.nik,
+          nik_user: user.nik,
+          type_cuti: type_cuti
         },
+        attributes: ["sisa_cuti", "periode"],
         include: [
           {
             model: Jns_cuti,
@@ -1430,12 +1469,27 @@ Tanggal : ${mulai} s/d ${samapi} (${jumlah} hari)`
             attributes: ["type_cuti"],
           },
         ],
-        order: [["createdAt", "ASC"]],
+        order: [["createdAt", "DESC"]],
       });
-      if (data.length == 0) {
-        return res.status(404).json({
+      if (data == null) {
+        let jnsCuti = await Jns_cuti.findOne({
+          where: {
+            id: type_cuti
+          },
+          attributes: ["type_cuti", "total"]
+        })
+        let yearNow = new Date().getFullYear()
+        let sisaCuti = {
+          sisa_cuti: jnsCuti.total,
+          periode: yearNow,
+          jenis_cuti: {
+            type_cuti: jnsCuti.type_cuti
+          }
+        }
+        return res.status(200).json({
           error: true,
-          message: "data not found",
+          message: 'Belum pernah di ambil',
+          data: sisaCuti
         });
       }
       return res.status(200).json({
@@ -1829,8 +1883,7 @@ Tanggal : ${mulai} s/d ${samapi} (${jumlah} hari)`
       let token = req.cookies.token;
       let decoded = jwt.verify(token, secretKey);
       let hakakses = [];
-      let getAnggota = await Atasan.findOne({
-        attributes: ["bos"],
+      let getAnggota = await Instalasi.findOne({
         where: {
           bos: decoded.id,
         },
@@ -1896,16 +1949,16 @@ Tanggal : ${mulai} s/d ${samapi} (${jumlah} hari)`
   GetCuti: async (req, res) => {
     let diCuti = req.body.id;
     try {
-      let leager = await Ledger_cuti.findOne({
+      let cuti = await Cuti.findOne({
         where: {
-          id_cuti: diCuti,
+          id: diCuti
         },
         attributes: ["id"],
-      });
+      })
       // set jwt token
       let token = jwt.sign(
-        { leager },
-        secretKey
+        { cuti },
+        secretKey,
       );
       return res.status(200).json({
         error: false,

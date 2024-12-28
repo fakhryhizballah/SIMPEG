@@ -38,10 +38,27 @@ function parsingDataCuti(data) {
     rows.remove();
     for (let i of data) {
         let nomor = data.indexOf(i) + 1;
-        let tmulai = i.data_cuti.mulai.split("-");
-        let tanggalmulai = tmulai[2] + "/" + tmulai[1] + "/" + tmulai[0];
-        let tsampai = i.data_cuti.samapi.split("-");
-        let tanggalsampai = tsampai[2] + "/" + tsampai[1] + "/" + tsampai[0];
+        let tanggalmulai;
+        let tanggalsampai;
+        if (i.data_cuti.mulai == null || i.data_cuti.mulai == '0000-00-00') {
+            tanggalmulai = "-";
+        } else {
+            tanggalmulai = new Date(i.data_cuti.mulai).toLocaleDateString('id-ID', {
+                day: 'numeric',
+                month: 'numeric',
+                year: 'numeric'
+            });
+        }
+        if (i.data_cuti.samapi == null || i.data_cuti.samapi == '0000-00-00') {
+            tanggalsampai = "-";
+
+        } else {
+            tanggalsampai = new Date(i.data_cuti.samapi).toLocaleDateString('id-ID', {
+                day: 'numeric',
+                month: 'numeric',
+                year: 'numeric'
+            });
+        }
         let approve_status = "";
         if (i.approve_date == null) {
             approve_status = "Belum di Approve"
@@ -64,7 +81,7 @@ function parsingDataCuti(data) {
         let row = $("<tr>");
         row.append($("<td>" + nomor + "</td>"));
         row.append($("<td>" + i.data_cuti.user.nama + "</td>"));
-        row.append($("<td>" + tanggalmulai + " - " + tanggalsampai + "</td>"));
+        row.append($("<td>" + tanggalmulai + " s/d " + tanggalsampai + "</td>"));
         row.append($("<td>" + i.data_cuti.jenis_cuti.type_cuti + "</td>"));
         row.append($("<td>" + i.data_cuti.jumlah + "</td>"));
         row.append($("<td>" + i.data_cuti.keterangan + "</td>"));
@@ -117,7 +134,7 @@ async function setuju(id) {
 async function tolak(id) {
     let data = {
         id: id,
-        status: "Diolak",
+        status: "Ditolak",
         keterangan: $('#catatan').val()
     }
     await updateCuti(data);

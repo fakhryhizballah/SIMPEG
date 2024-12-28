@@ -9,6 +9,7 @@ const tracker = require('../controllers/tracker');
 const complaint = require('../controllers/complaint');
 const { upload } = require('../middleware/upload');
 const seen = require('../controllers/seen');
+const presensi = require('../controllers/presensi');
 
 
 router.get('/',middleware.checkLogin, controller.login);
@@ -30,6 +31,9 @@ router.get('/cuti', middleware.login, controller.cuti);
 router.get('/cuti/admin', middleware.login, controller.adminCuti);
 router.get('/aprovecuti', middleware.login, controller.approvalcuti);
 router.get('/aprovecuti/admin', middleware.login, controller.leagercuti);
+
+router.get('/presensi', middleware.login, controller.presensi);
+router.get('/absen', middleware.login, controller.absensi);
 
 router.get('/logout', middleware.logout);
 
@@ -95,6 +99,17 @@ router.post('/api/complaint/status', middleware.login, complaint.setStatus);
 router.get('/api/complaint/all', middleware.login, complaint.getAllTiket);
 router.get('/api/complaint/updateTiket', middleware.login, complaint.getUpdateTiket);
 // router.post('/api/complaint/grubtiket', middleware.login, complaint.updateTiket);
+
+router.get('/api/presensi/anggota', middleware.login, presensi.anggota);
+router.get('/api/presensi/departemen', middleware.login, presensi.departemen);
+router.get('/api/presensi/jnsdns', middleware.login, presensi.getTypeJadwal);
+router.post('/api/presensi/anggota', middleware.login, presensi.updateJadwal);
+router.post('/api/presensi/getlocation', middleware.login, presensi.getlocation);
+router.get('/api/presensi/jdldns', middleware.login, presensi.getjdlDNS);
+router.post('/api/presensi/absen', middleware.login, presensi.absen);
+router.get('/api/presensi/riwayat', middleware.login, presensi.riwayat);
+
+// router.get('/api/presensi/bos', middleware.login, presensi.jadwal);
 
 router.get('/api/seen', seen.update);
 router.get('/api/seen/online', seen.online);
